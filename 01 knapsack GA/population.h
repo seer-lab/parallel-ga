@@ -1,13 +1,13 @@
 #include <stdlib.h>
+#include <vector>
 
-void initPopulation (int *population, const int solutionsPerPopulation, const int length) {
 
-    for(int i = 0; i < solutionsPerPopulation; i++) {
-        
-        for (int j = 0; j < length; j++) {
+void initPopulation (std::vector<std::vector<int>> &population, const int solutionsPerPopulation, const int length) {
 
-            *((population+i*solutionsPerPopulation) + j) = rand() % 2;
-
-        }
+    for (auto i = population.begin(); i != population.end(); i++){
+        for (auto j = i->begin(); j != i->end(); j++)
+            *j = rand() % 2;
     }
+
+
 }

@@ -1,28 +1,27 @@
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
+
+using std::vector;
+
 
  #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a > _b ? _a : _b; })
 
-void selection (int *fitness, int *parents, int *population, const int length) {
+void selection (vector<int> fitness, vector<vector<int>> &parents, 
+                vector<vector<int>> population, const int length) {
 
     // generate 4 indexs between 0-9
-
-    int individualPool[4];
-    memset(individualPool, 0, 4*sizeof(int));
-
-
-    for (size_t i = 0; i < 4; i++) {
-        individualPool[i] = rand() % length;
-    }
+    vector<int> individualPool(4, 0);
+    for (vector<int>::size_type i = 0; i != individualPool.size(); i++) { individualPool[i] = rand() % length; }
 
     int parentIndex1 = 0;
     int parentIndex2 = 0;
     
-    for (size_t i = 0; i < length; i++) {
+    for (vector<int>::size_type i = 0; i != fitness.size(); i++) {
         
         if (fitness[i] == max(fitness[individualPool[0]], fitness[individualPool[1]]))
             parentIndex1 = i;
@@ -32,8 +31,8 @@ void selection (int *fitness, int *parents, int *population, const int length) {
     }
     
     
-    for(int i = 0; i < length; i++) {
-        *((parents+0*length) + i) = *((population+parentIndex1*length) + i);
-        *((parents+1*length) + i) = *((population+parentIndex2*length) + i);
+    for (vector<int>::size_type i = 0; i != length; i++) {
+        parents[0][i] = population[parentIndex1][i];
+        parents[1][i] = population[parentIndex2][i];
     }
 }

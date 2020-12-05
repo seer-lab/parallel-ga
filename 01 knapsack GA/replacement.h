@@ -1,27 +1,60 @@
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
-#include "evaluation.h"
+#include <vector>
 
-void replacement (int *population,  int *mutants, int *parents, int *fitness, int *itemWeight, int *itemProfit, const int length, const int maxWeight) {
+using std::vector;
 
-    int lowestIndex[4];
-    memset(lowestIndex, 0, 4*sizeof(int));
+int find_min(vector<int> a, int n) {
+    vector<int>::size_type c, index = 0;
 
-    for (size_t i = 0; i < 4; i++) {
+    for(c = 1; c != n; c++)
+        if (a[c] < a[index])
+            index = c;
+
+    return index;
+}
+
+void eval (vector<int> individual, vector<int> &fitness, vector<int> itemWeight, 
+           vector<int> itemProfit, const int index, const int length, const int maxWeight) {
+
+    int sumWeight = 0;
+    int sumProfit = 0;
+
+    for(vector<int>::size_type i = 0; i != individual.size(); i++) {
+        sumProfit += individual[i] * itemProfit[i];
+        sumWeight += individual[i] * itemWeight[i];
+    }
+
+    if (sumWeight > maxWeight)
+            fitness[index] = 0;
+        else
+            fitness[index] = sumProfit;
+
+}
+
+void replacement (vector<vector<int>> &population,  
+                  vector<vector<int>> mutants, vector<vector<int>> parents, 
+                  vector<int> &fitness, vector<int> itemWeight, vector<int> itemProfit, 
+                  const int length, const int maxWeight) {
+
+    vector<int> lowestIndex(4, 0);
+
+    for(vector<int>::size_type i = 0; i != 4; i++) {
 
         lowestIndex[i] = find_min(fitness, length);
 
-        for (size_t j = 0; j < length; j++) {
+        for (vector<int>::size_type j = 0; j != population.size(); j++) {
           
             if (i < 2)
-                *((population+lowestIndex[i]*length) + j) = *((parents+(i%2)*length) + j);
+                population[lowestIndex[i]][j] = parents[i%2][j];
             else
-                *((population+lowestIndex[i]*length) + j) = *((mutants+(i%2)*length) + j);
+                population[lowestIndex[i]][j] = mutants[i%2][j];
 
         }
 
-        eval(population, fitness, itemWeight, itemProfit, lowestIndex[i], length, maxWeight);   
+        eval(population[i], fitness, itemWeight, itemProfit, lowestIndex[i], length, maxWeight);   
     }
 
 }
+
