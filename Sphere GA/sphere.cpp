@@ -1,12 +1,14 @@
 #include <stdio.h> 
 #include <stdlib.h>
+#include <math.h> 
 #include <cstring>
 #include <vector>
 #include <cstdlib>
 #include <iostream>
 
-#include "population.h"
-#include "evaluate.h"
+#include "population.hpp"
+#include "evaluate.hpp"
+#include "selection.hpp"
 
 using std::vector;
 using std::cout;
@@ -16,16 +18,15 @@ using std::cout;
 int main() {
     
 
-
-    // Optimization Parameters for Sphere function
+    // Optimization parameters for Sphere function
     vector<float> bounds{-5.12, 5.12};
 
-    // # of genes per individual
-    const int p = 30;
-    size_t bytes = p * sizeof(double);
-
-    // Size of population on each generation
-    const int populationSize = 100;
+    // GA parameters
+    const int p = 30; // # of genes per individual
+    const int populationSize = 100; 
+    const int survive = 1; // Elitism  
+    const int keep = ceil((populationSize-survive)/2); // Number of matings
+    int numGenerations = 300000; 
 
     // Intialization for random number generator
     time_t t;
@@ -39,10 +40,30 @@ int main() {
     vector<double> fitness(populationSize, 0);
     evaluation(population, fitness, p);
 
-    vector<vector<double>> parents(2, vector<double>(p, 0));
-    vector<vector<double>> offsprings(2, vector<double>(p, 0));
-    vector<vector<double>> mutants(2, vector<double>(p, 0));
+    vector<vector<double>> parents(keep, vector<double>(p, 0));
+    vector<double> offspring(p, 0);
     vector<vector<double>> temp_population(populationSize, vector<double>(p, 0));
+
+    // TODO implement the main GA loop refer to paper "An Introduction to Genetic Algorithms" and ECE457A
+    while (numGenerations < 0) {
+        
+
+
+
+
+
+
+
+
+        numGenerations--;
+    }
+
+
+
+
+
+    
+
 
     
     return 0;
