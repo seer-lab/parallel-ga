@@ -1,6 +1,3 @@
-#include <stdio.h> 
-#include <vector>
-
 double square(double x) { return x * x;}
 
 // Sphere Optimization: https://www.sfu.ca/~ssurjano/spheref.html

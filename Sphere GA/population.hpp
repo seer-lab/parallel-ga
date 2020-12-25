@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <vector>
-
 // Generates random values between -5.12 and 5.12
 void initPopulation (std::vector<std::vector<double>> &population, std::vector<float> bounds) {
 

@@ -9,6 +9,7 @@
 #include "population.hpp"
 #include "evaluate.hpp"
 #include "selection.hpp"
+#include "crossover.hpp"
 
 using std::vector;
 using std::cout;
@@ -35,9 +36,10 @@ int main() {
     const int p = 30; // # of genes per individual
     const int populationSize = 100; 
     const int elitism = 1; 
-    const int mating = ceil((populationSize-elitism)/2);
+    const int mating = ceil((populationSize)/2);
     const int tournamentSize = 2;
     int numGenerations = 5; 
+    const float crossoverProbablity = 0.75f;
     
 
     // Intialization for random number generator
@@ -47,32 +49,28 @@ int main() {
     // Initialize Population 
     vector<vector<double>> population(populationSize, vector<double>(p, 0));
     initPopulation(population, bounds);
-    print2dvec(population);
 
     // Evaluating Initial Population
     vector<double> fitness(populationSize, 0);
     evaluation(population, fitness, p);
 
     vector<vector<double>> parents(mating, vector<double>(p, 0));
-    vector<double> offspring(p, 0);
     vector<vector<double>> temp_population(populationSize, vector<double>(p, 0));
 
+    
+
     // Main GA loop
-    while (numGenerations < 0) {
+    while (numGenerations > 0) {
 
+        tournamentSelection(parents, population, fitness, p, populationSize, tournamentSize);
 
-        tournamentSelection(parents, population, fitness, p, populationSize, mating, tournamentSize);
-        print2dvec(parents);
-
+        //crossover(temp_population, parents, p, crossoverProbablity, mating);
+            
+        //print2dvec(temp_population);
 
         numGenerations--;
     }
 
-
-
-
-
-    
 
 
     
