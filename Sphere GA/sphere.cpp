@@ -14,6 +14,16 @@ using std::vector;
 using std::cout;
 
 
+void print2dvec(vector<vector<double>> vec) {
+
+    for(auto& i : vec) {
+        cout << "[ ";
+        for(auto& j : i)
+            cout << j << " ";
+        cout << "]\n";
+    }
+}
+
 
 int main() {
     
@@ -24,9 +34,11 @@ int main() {
     // GA parameters
     const int p = 30; // # of genes per individual
     const int populationSize = 100; 
-    const int survive = 1; // Elitism  
-    const int keep = ceil((populationSize-survive)/2); // Number of matings
-    int numGenerations = 300000; 
+    const int elitism = 1; 
+    const int mating = ceil((populationSize-elitism)/2);
+    const int tournamentSize = 2;
+    int numGenerations = 5; 
+    
 
     // Intialization for random number generator
     time_t t;
@@ -35,24 +47,22 @@ int main() {
     // Initialize Population 
     vector<vector<double>> population(populationSize, vector<double>(p, 0));
     initPopulation(population, bounds);
+    print2dvec(population);
 
     // Evaluating Initial Population
     vector<double> fitness(populationSize, 0);
     evaluation(population, fitness, p);
 
-    vector<vector<double>> parents(keep, vector<double>(p, 0));
+    vector<vector<double>> parents(mating, vector<double>(p, 0));
     vector<double> offspring(p, 0);
     vector<vector<double>> temp_population(populationSize, vector<double>(p, 0));
 
-    // TODO implement the main GA loop refer to paper "An Introduction to Genetic Algorithms" and ECE457A
+    // Main GA loop
     while (numGenerations < 0) {
-        
 
 
-
-
-
-
+        tournamentSelection(parents, population, fitness, p, populationSize, mating, tournamentSize);
+        print2dvec(parents);
 
 
         numGenerations--;
