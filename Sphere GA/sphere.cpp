@@ -5,11 +5,15 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <cfloat>
 
 #include "population.hpp"
 #include "evaluate.hpp"
 #include "selection.hpp"
 #include "crossover.hpp"
+#include "mutation.hpp"
+#include "replacement.hpp"
+
 
 using std::vector;
 using std::cout;
@@ -23,8 +27,14 @@ void print2dvec(vector<vector<double>> vec) {
             cout << j << " ";
         cout << "]\n";
     }
+
 }
 
+void printvec(vector<double> vec) {
+
+    for(auto& i : vec)
+        cout << i << "\n";
+}
 
 int main() {
     
@@ -35,13 +45,13 @@ int main() {
     // GA parameters
     const int p = 30; // # of genes per individual
     const int populationSize = 100; 
-    const int elitism = 1; 
+    const int elitism = 4; 
     const int mating = ceil((populationSize)/2);
-    const int tournamentSize = 2;
-    int numGenerations = 5; 
-    const float crossoverProbablity = 0.75f;
+    const int tournamentSize = 5;
+    int numGenerations = 300000; 
+    const float crossoverProbability = 0.9f;
+    const float mutationProbability = 0.01f;
     
-
     // Intialization for random number generator
     time_t t;
     srand((unsigned) time(&t));
@@ -53,8 +63,9 @@ int main() {
     // Evaluating Initial Population
     vector<double> fitness(populationSize, 0);
     evaluation(population, fitness, p);
+    printvec(fitness);
 
-    vector<vector<double>> parents(mating, vector<double>(p, 0));
+    vector<vector<double>> parents(populationSize, vector<double>(p, 0));
     vector<vector<double>> temp_population(populationSize, vector<double>(p, 0));
 
     
@@ -64,13 +75,20 @@ int main() {
 
         tournamentSelection(parents, population, fitness, p, populationSize, tournamentSize);
 
-        //crossover(temp_population, parents, p, crossoverProbablity, mating);
-            
-        //print2dvec(temp_population);
+        crossover(temp_population, parents, p, crossoverProbability, mating);
+
+        mutation(temp_population, bounds, p, populationSize, mutationProbability);
+
+        replacement(population, temp_population, fitness, p, populationSize, elitism);
+
+        evaluation(population, fitness, p);
 
         numGenerations--;
     }
 
+    // print2dvec(population);
+    cout << "new population" << std::endl;
+    printvec(fitness);
 
 
     
