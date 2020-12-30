@@ -1,6 +1,6 @@
 #include <stdio.h> 
 #include <stdlib.h>
-#include <math.h> 
+#include <cmath> 
 #include <cstring>
 #include <vector>
 #include <cstdlib>
@@ -45,7 +45,7 @@ int main() {
     // GA parameters
     const int p = 30; // # of genes per individual
     const int populationSize = 100; 
-    const int elitism = 4; 
+    const int elitism = 1; 
     const int mating = ceil((populationSize)/2);
     const int tournamentSize = 5;
     int numGenerations = 300000; 
