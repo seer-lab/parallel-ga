@@ -1,14 +1,4 @@
-int findTournamentMin(std::vector<double> a, std::vector<int> b, int n) {
-    std::vector<int>::size_type c, index = b[0];
-
-    for(c = 1; c != n; c++)
-        if (a[b[c]] < a[index])
-            index = b[c];
-
-    return index;
-}
-
-int findTournamentcloseToZero(std::vector<double> a, std::vector<int> b, int n) {
+int bestIndividual(std::vector<double> a, std::vector<int> b, int n) {
     std::vector<int>::size_type i, index = b[0];
     double diff = DBL_MAX;
     for (i = 0; i < n; i++) {
@@ -37,7 +27,7 @@ void tournamentSelection(std::vector<std::vector<double>> &parents, std::vector<
         for (std::vector<int>::size_type i = 0; i != tournamentSize; i++) 
             tournamentPool[i] = rand() % populationSize; 
 
-        parentIndex = findTournamentcloseToZero(fitness, tournamentPool, tournamentSize);
+        parentIndex = bestIndividual(fitness, tournamentPool, tournamentSize);
 
         
         for (std::vector<int>::size_type i = 0; i != p; i++) 

@@ -1,13 +1,3 @@
-int findMin(std::vector<double> a, int n) {
-    std::vector<int>::size_type c, index = 0;
-
-    for(c = 1; c != n; c++)
-        if (a[c] < a[index])
-            index = c;
-
-    return index;
-}
-
 int closeToZero(std::vector<double> a, int n) {
     std::vector<int>::size_type i, index = 0;
     double diff = DBL_MAX;
