@@ -1,6 +1,8 @@
 int closeToZero(std::vector<double> a, int n) {
+
     std::vector<int>::size_type i, index = 0;
     double diff = DBL_MAX;
+    
     for (i = 0; i < n; i++) {
         double absVal = abs(a[i]);
         if (absVal < diff) {

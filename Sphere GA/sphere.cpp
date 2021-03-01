@@ -78,7 +78,7 @@ int main() {
 
     
 
-    for (size_t i = 0; i < 300000; i++) {
+    for (size_t i = 0; i < 1000; i++) {
 
         for (size_t j = 0; j < (populationSize/4-1); j++) {
             

@@ -7,15 +7,17 @@
 #include <iostream>
 #include <cfloat>
 
-#include "population.h"
-#include "evaluate.h"
-#include "selection.h"
-#include "crossover.h"
-#include "mutation.h"
-#include "replacement.h"
+#include "population.hpp"
+#include "selection.hpp"
+#include "crossover.hpp"
+#include "mutation.hpp"
+#include "replacement.hpp"
+
 
 using std::vector;
 using std::cout;
+
+void evaluation (std::vector<std::vector<double>> population, std::vector<double> &fitness, const int p, const int populationSize);
 
 
 void print2dvec(vector<vector<double>> vec) {
@@ -43,11 +45,11 @@ int main() {
 
     // GA parameters
     const int p = 30; // # of genes per individual
-    const int populationSize = 1024; 
+    const int populationSize = 16384; 
     const int elitism = 5; 
     const int mating = ceil((populationSize)/2);
     const int tournamentSize = 5;
-    int numGenerations = 1000; 
+    int numGenerations = 1; 
     const float crossoverProbability = 0.9f;
     const float mutationProbability = 0.01f;
     
@@ -61,30 +63,32 @@ int main() {
 
     // Evaluating Initial Population
     vector<double> fitness(populationSize, 0);
-    evaluation(population, fitness, p);
+    evaluation(population, fitness, p, populationSize);
     //printvec(fitness);
 
     vector<vector<double>> parents(populationSize, vector<double>(p, 0));
     vector<vector<double>> temp_population(populationSize, vector<double>(p, 0));
 
-    
 
     // Main GA loop
     while (numGenerations > 0) {
 
         tournamentSelection(parents, population, fitness, p, populationSize, tournamentSize);
+
         crossover(temp_population, parents, p, crossoverProbability, mating);
+
         mutation(temp_population, bounds, p, populationSize, mutationProbability);
+
         replacement(population, temp_population, fitness, p, populationSize, elitism);
-        evaluation(population, fitness, p);
+
+        evaluation(population, fitness, p, populationSize);
 
         numGenerations--;
     }
 
     // print2dvec(population);
-    //cout << "new population" << std::endl;
-   // printvec(fitness);
-
+    cout << "new population" << std::endl;
+    //printvec(fitness);
 
     
     return 0;

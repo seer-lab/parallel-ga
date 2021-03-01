@@ -1,6 +1,8 @@
 int bestIndividual(std::vector<double> a, std::vector<int> b, int n) {
+    
     std::vector<int>::size_type i, index = b[0];
     double diff = DBL_MAX;
+
     for (i = 0; i < n; i++) {
         double absVal = abs(a[b[i]]);
         if (absVal < diff) {
