@@ -36,11 +36,11 @@ int main() {
     vector<float> bounds{-5.12, 5.12};
 
     // GA parameters
-    const int p = 10; // # of genes per individual
-    const int populationSize = 16384; 
-    const int elitism = 0; 
+    const int p = 1024; // # of genes per individual
+    const int populationSize = 8192; 
+    const int elitism = 5; 
     const int mating = ceil((populationSize)/2);
-    const int tournamentSize = 2;
+    const int tournamentSize = 5;
     int numGenerations = 1000; 
     const float crossoverProbability = 0.9f;
     const float mutationProbability = 0.05f;
@@ -89,7 +89,7 @@ int main() {
     // For testing purposes
 
     // cout << "new population" << std::endl;
-    printvec(fitness, populationSize);
+    // printvec(fitness, populationSize);
 
     return 0;
 }
