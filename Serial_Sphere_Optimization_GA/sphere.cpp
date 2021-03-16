@@ -1,6 +1,7 @@
 #include <cmath> 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "replacement.h"
 #include "mutation.h"
@@ -36,15 +37,14 @@ int main() {
     vector<float> bounds{-5.12, 5.12};
 
     // GA parameters
-    const int p = 1024; // # of genes per individual
+    const int p = 30; // # of genes per individual
     const int populationSize = 8192; 
-    const int elitism = 5; 
+    const int elitism = 2; 
     const int mating = ceil((populationSize)/2);
-    const int tournamentSize = 5;
-    int numGenerations = 1000; 
+    const int tournamentSize = 6;
+    int numGenerations = 10000; 
     const float crossoverProbability = 0.9f;
     const float mutationProbability = 0.05f;
-
 
     // Intialization for random number generator
     time_t t;
@@ -89,7 +89,12 @@ int main() {
     // For testing purposes
 
     // cout << "new population" << std::endl;
-    // printvec(fitness, populationSize);
+    printvec(fitness, populationSize);
 
+    double *min = std::min_element(fitness, fitness + populationSize);
+
+    // Find the minimum element
+    cout << "\nMin Element = "
+         << *min << std::endl;
     return 0;
 }
