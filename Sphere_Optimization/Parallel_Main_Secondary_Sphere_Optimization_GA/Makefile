@@ -1,29 +1,38 @@
 NVCC=nvcc
 GCC=g++
 
-sphere: evaluation.o mutation.o population.o crossover.o replacement.o selection.o GA.o Makefile
-	$(NVCC) -arch=sm_60 -o sphere evaluation.o mutation.o population.o crossover.o replacement.o selection.o GA.o
+CUDA_INCLUDEPATH=/usr/local/cuda-11.2/include
+NVCC_OPTS=-O3 -arch=sm_60 -Xcompiler -Wall -Xcompiler -Wextra -m64 -rdc=true -lcudadevrt
 
-mutation.o: mutation.cpp
-	g++ -c mutation.cpp 
+# Source file directory:
+SRC_DIR = src
 
-population.o: population.cpp 
-	g++ -c population.cpp 
+# Object file directory:
+OBJ_DIR = bin
 
-crossover.o: crossover.cpp
-	g++ -c crossover.cpp 
+# Include header file diretory:
+INC_DIR = include
 
-replacement.o: replacement.cpp 
-	g++ -c replacement.cpp 
+# Target executable name:
+EXE = sphere
 
-selection.o: selection.cpp 
-	g++ -c selection.cpp 
+# Object files:
+OBJS = $(OBJ_DIR)/evaluation.o $(OBJ_DIR)/mutation.o $(OBJ_DIR)/population.o $(OBJ_DIR)/crossover.o $(OBJ_DIR)/replacement.o $(OBJ_DIR)/selection.o $(OBJ_DIR)/GA.o
 
-GA.o: GA.cu
-	$(NVCC) -c -arch=sm_60 GA.cu 
+$(EXE): $(OBJS) Makefile
+	$(NVCC) -o $@ $(OBJS) -L $(NVCC_OPTS)
 
-evaluation.o: evaluation.cu
-	$(NVCC) -c -arch=sm_60 evaluation.cu 
+# Compile main
+$(OBJ_DIR)/%.o: %.cu
+	$(NVCC) -c $< -o $@ $(NVCC_OPTS)
+
+# Compile C++ Source files to object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp include/%.h
+	$(GCC) -c $< -o $@
+
+# Compile CUDA source files ot object files
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cu $(INC_DIR)/%.cuh
+	$(NVCC) -c $< -o $@ $(NVCC_OPTS)
 
 clean:
-	rm -f *.o *.png a
+	$(RM) bin/* *.o $(EXE)

@@ -1,16 +1,19 @@
-#include <cmath> 
-#include <vector>
-#include <iostream>
+#include <stdlib.h> // for rand
+#include <vector> 
+#include <cfloat> // For double_max
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
+#include <cassert>
+#include <cmath>
 
-#include "replacement.h"
-#include "mutation.h"
-#include "crossover.h"
-#include "selection.h"
-#include "evaluation.h"
-#include "population.h"
+#include "include/replacement.h"
+#include "include/mutation.h"
+#include "include/crossover.h"
+#include "include/selection.h"
+#include "include/population.h"
+#include "include/evaluation.h"
 
-using std::vector;
 using std::cout;
 
 void print2dvec(double *v, int r, int c) {
@@ -34,10 +37,10 @@ void printvec(double *v, int n) {
 int main() {
 
     // Optimization parameters for Sphere function
-    vector<float> bounds{-5.12, 5.12};
+    float bounds[2] = {-5.12, 5.12};
 
     // GA parameters
-    const int p = 100; // # of genes per individual
+    const int p = 5; // # of genes per individual
     const int populationSize = 8192; 
     const int elitism = 2; 
     const int mating = ceil((populationSize)/2);

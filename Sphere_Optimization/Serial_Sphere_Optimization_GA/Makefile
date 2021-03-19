@@ -1,28 +1,30 @@
 GCC=g++
 
-sphere: evaluation.o mutation.o population.o crossover.o replacement.o selection.o GA.o Makefile
-	$(GCC) -o sphere evaluation.o mutation.o population.o crossover.o replacement.o selection.o GA.o
+# Source file directory:
+SRC_DIR = src
 
-mutation.o: mutation.cpp
-	$(GCC) -c mutation.cpp 
+# Object file directory:
+OBJ_DIR = bin
 
-population.o: population.cpp 
-	$(GCC) -c population.cpp 
+# Include header file diretory:
+INC_DIR = include
 
-crossover.o: crossover.cpp
-	$(GCC) -c crossover.cpp 
+# Target executable name:
+EXE = sphere
 
-replacement.o: replacement.cpp 
-	$(GCC) -c replacement.cpp 
+# Object files:
+OBJS = $(OBJ_DIR)/evaluation.o $(OBJ_DIR)/mutation.o $(OBJ_DIR)/population.o $(OBJ_DIR)/crossover.o $(OBJ_DIR)/replacement.o $(OBJ_DIR)/selection.o $(OBJ_DIR)/GA.o
 
-selection.o: selection.cpp 
-	$(GCC) -c selection.cpp 
+$(EXE): $(OBJS) Makefile
+	$(GCC) -o $@ $(OBJS) 
 
-evaluation.o: evaluation.cpp
-	$(GCC) -c evaluation.cpp 
+# Compile main
+$(OBJ_DIR)/%.o: %.cpp
+	$(GCC) -c $< -o $@ 
 
-GA.o: GA.cpp
-	$(GCC) -c GA.cpp 
+# Compile C++ Source files to object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp include/%.h
+	$(GCC) -c $< -o $@
 
 clean:
-	rm -f *.o *.png a
+	$(RM) bin/* *.o $(EXE)

@@ -46,7 +46,7 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, double* p
 
     // Every 5 generations migrate individuals to n+1 islands
     bool migrationFlag = false;
-    if (numGenerations % 5 == 0) migrationFlag = true;
+    if (numGenerations % 2 == 0) migrationFlag = true;
 
     if (numGenerations == numGen)
         evaluation(fitness, population, p, tid);
@@ -140,7 +140,7 @@ int main() {
     float bounds[2] = {-5.12, 5.12};
 
     // GA parameters
-    const int p = 100; // # of genes per individual
+    const int p = 5; // # of genes per individual
     const int populationSize = 8192; 
     int numGenerations = 10000; 
 

@@ -3,20 +3,20 @@
 #include <cfloat> // For double_max
 #include <algorithm>
 
-#include "utils.h" // For cuda 
+#include "include/utils.h" // For cuda 
 
-#include "replacement.h"
-#include "mutation.h"
-#include "crossover.h"
-#include "selection.h"
-#include "population.h"
-#include "evaluation.cuh"
+#include "include/replacement.h"
+#include "include/mutation.h"
+#include "include/crossover.h"
+#include "include/selection.h"
+#include "include/population.h"
+#include "include/evaluation.cuh"
 
 using std::vector;
 using std::cout;
 
 #define warp 64
-#define alpha 0.5
+#define alpha 0.25
 
 // Helper function for printing the population and fitness
 void print2dvec(double *v, int r, int c) {
@@ -36,15 +36,15 @@ void printvec(double *v, int n) {
 int main() {
 
     // Optimization parameters for Sphere function
-    vector<float> bounds{-5.12, 5.12};
+    float bounds[2] = {-5.12, 5.12};
 
     // GA parameters
-    const int p = 30; // # of genes per individual
+    const int p = 5; // # of genes per individual
     const int populationSize = 8192; 
     const int elitism = 2; 
     const int mating = ceil((populationSize)/2);
     const int tournamentSize = 6;
-    int numGenerations = 10000; 
+    int numGenerations = 1000; 
     const float crossoverProbability = 0.9f;
     const float mutationProbability = 0.05f;
 
@@ -68,6 +68,8 @@ int main() {
     // Memory allocation for device variables
     cudaMalloc(&d_population, bytesPopulation);
     cudaMalloc(&d_fitness, bytesFitness);
+
+    cudaMemset(d_fitness, 0, bytesFitness);
 
     // Initialize Population 
     initPopulation(population, bounds, populationSize, p);
@@ -95,8 +97,7 @@ int main() {
     double *min = std::min_element(fitness, fitness + populationSize);
 
     // Find the minimum element
-    cout << "\nMin Element = "
-         << *min << std::endl;
+    cout << "\nMin Element = " << *min << std::endl;
 
     return 0;
 }
