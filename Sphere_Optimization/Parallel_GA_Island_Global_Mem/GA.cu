@@ -24,9 +24,9 @@ using std::endl;
 #define elitism 2
 #define tournamentSize 6
 #define crossoverProbability 0.9f
-#define mutationProbability 0.05f
-#define alpha 0.25f
-#define numGen 10000
+#define mutationProbability 0.001f
+#define alpha 0.5f
+#define numGen 1000
 #define lowerBound -5.12
 #define upperBound 5.12
 
@@ -51,7 +51,19 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, double* p
     if (numGenerations == numGen)
         evaluation(fitness, population, p, tid);
     __syncthreads();
-    
+
+    /*
+    if (tid == 0) {
+
+        printf("numGenerations = %d [", numGenerations);
+        for (int i = 0; i < p; i++) {
+            printf("%f ", population[tid * p + i]);
+        }
+        printf("]\n");
+
+    }
+    */
+
     // Tournament Selection
     selection(d_state, parents, population, fitness, p, tid, individualsPerIsland);
     __syncthreads();
@@ -85,7 +97,8 @@ void parallelGA(double* h_population,
                 size_t bytesPopulation, 
                 size_t bytesFitness,
                 int numGenerations,
-                curandState *&d_state) {
+                curandState *&d_state,
+                time_t t) {
     
     // Allocating device memory
     double *d_population, *d_fitness, *d_parents;
@@ -101,6 +114,8 @@ void parallelGA(double* h_population,
     cudaMemcpy(d_population, h_population, bytesPopulation, cudaMemcpyHostToDevice);
     
     while (numGenerations > 0) {
+        setup_kernel<<<islands,individualsPerIsland>>>(d_state, (unsigned long) t );
+        cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError()); 
         gpu_GA<<<islands, 
                  individualsPerIsland>>>
                  (d_state, d_population, d_fitness, d_parents, populationSize, p, numGenerations);
@@ -140,9 +155,9 @@ int main() {
     float bounds[2] = {-5.12, 5.12};
 
     // GA parameters
-    const int p = 5; // # of genes per individual
+    const int p = 1024; // # of genes per individual
     const int populationSize = 8192; 
-    int numGenerations = 10000; 
+    int numGenerations = 1000; 
 
     // Intialization for random number generator
     time_t t;
@@ -165,11 +180,10 @@ int main() {
     // cuRand setup
     curandState *d_state;
     cudaMalloc(&d_state, islands*individualsPerIsland*sizeof( curandState ) );
-    setup_kernel<<<islands,individualsPerIsland>>>(d_state, (unsigned long) t );
-    cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError()); 
+    
 
     // GA
-    parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state);
+    parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state, t);
 
     printvec(fitness, populationSize);
 

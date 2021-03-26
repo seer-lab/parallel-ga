@@ -2,7 +2,7 @@ NVCC=nvcc
 GCC=g++
 
 CUDA_INCLUDEPATH=/usr/local/cuda-11.2/include
-NVCC_OPTS=-O3 -arch=sm_60 -Xcompiler -Wall -Xcompiler -Wextra -m64 -rdc=true -lcudadevrt
+NVCC_OPTS=-O3 -arch=sm_60 -Xcompiler -Wall -Xcompiler -Wextra -m64 -rdc=true -lcudadevrt -G
 
 # Source file directory:
 SRC_DIR = src

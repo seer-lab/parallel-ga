@@ -43,8 +43,8 @@ int main() {
     const int populationSize = 8192; 
     const int elitism = 2; 
     const int mating = ceil((populationSize)/2);
-    const int tournamentSize = 6;
-    int numGenerations = 1000; 
+    const int tournamentSize = 2;
+    int numGenerations = 100; 
     const float crossoverProbability = 0.9f;
     const float mutationProbability = 0.05f;
 

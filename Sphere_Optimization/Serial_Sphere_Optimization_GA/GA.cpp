@@ -40,15 +40,15 @@ int main() {
     float bounds[2] = {-5.12, 5.12};
 
     // GA parameters
-    const int p = 5; // # of genes per individual
+    const int p = 1024; // # of genes per individual
     const int populationSize = 8192; 
     const int elitism = 2; 
     const int mating = ceil((populationSize)/2);
-    const int tournamentSize = 6;
-    int numGenerations = 10000; 
+    const int tournamentSize = 10;
+    int numGenerations = 1000; 
     const float crossoverProbability = 0.9f;
-    const float mutationProbability = 0.05f;
-    const float alpha = 0.25f;
+    const float mutationProbability = 0.001f;
+    const float alpha = 0.5f;
 
     // Intialization for random number generator
     time_t t;

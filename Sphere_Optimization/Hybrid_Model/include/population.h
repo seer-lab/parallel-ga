@@ -3,6 +3,6 @@
 
 #include <stdlib.h>
 
-void initPopulation(double* population, float* bounds, const int row, const int col);
+void initPopulation(double* population, float* bounds, const int col, const int row);
 
 #endif

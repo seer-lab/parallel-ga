@@ -14,6 +14,8 @@
 #include <thrust/functional.h>
 #include <curand.h>
 #include <curand_kernel.h>
+#include <thrust/extrema.h>
+
 
 #define checkCudaErrors(val) check( (val), #val, __FILE__, __LINE__)
 

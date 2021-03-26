@@ -23,12 +23,12 @@ using std::endl;
 
 #define SHMEN_SIZE (10 * individualsPerIsland * 8)
 
-#define elitism 1
+#define elitism 2
 #define tournamentSize 6
 #define crossoverProbability 0.9f
 #define mutationProbability 0.05f
 #define alpha 0.25f
-#define numGen 10000
+#define numGen 100
 #define lowerBound -5.12
 #define upperBound 5.12
 
@@ -160,7 +160,7 @@ int main() {
     // GA parameters
     const int p = 10; // # of genes per individual
     const int populationSize = 2048; 
-    int numGenerations = 10000; 
+    int numGenerations = 100; 
 
     // Intialization for random number generator
     time_t t;

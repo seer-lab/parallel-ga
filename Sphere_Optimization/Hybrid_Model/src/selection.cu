@@ -1,10 +1,10 @@
 #include "../include/selection.cuh"
-#define tournamentSize 6
+#define tournamentSize 10
 
 __device__
-unsigned int bestIndividual(double *a, int *b, int n) {
+unsigned int bestIndividual(double *a, unsigned int *b, int n) {
     
-    int i, index = b[0];
+    unsigned int i, index = b[0];
     double diff = DBL_MAX;
 
     for (i = 0; i < n; i++) {
@@ -25,19 +25,19 @@ void selection(curandState *d_state, double *parents, double *population, double
                const int p, int tid, const int individualsPerIsland) {
                    
     // Individuals selected for tournament
-    int tournamentPool[tournamentSize];
+    unsigned int tournamentPool[tournamentSize];
 
     for (unsigned int i = 0; i < tournamentSize; i++) {
         float myrand = curand_uniform(&d_state[tid]);
         myrand *= ((individualsPerIsland*blockIdx.x+individualsPerIsland) - (individualsPerIsland*blockIdx.x)-1+0.999999);
         myrand += (individualsPerIsland*blockIdx.x);
-        int value = (int)truncf(myrand);
+        unsigned int value = (int)truncf(myrand);
 
         tournamentPool[i] = value;
     }
 
     // select best individual in tournament 
-    int parentIndex = bestIndividual(fitness, tournamentPool, tournamentSize);
+    unsigned int parentIndex = bestIndividual(fitness, tournamentPool, tournamentSize);
 
     // Copying best individual from tournament to island parent 
     for (unsigned int i = 0; i < p; i++)

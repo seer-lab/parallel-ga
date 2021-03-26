@@ -22,11 +22,11 @@ using std::endl;
 #define individualsPerIsland 8192/islands
 
 #define elitism 2
-#define tournamentSize 6
+#define tournamentSize 10
 #define crossoverProbability 0.9f
-#define mutationProbability 0.05f
+#define mutationProbability 0.001f
 #define alpha 0.25f
-#define numGen 10000
+#define numGen 1000
 
 #define lowerBound -5.12
 #define upperBound 5.12
@@ -44,14 +44,14 @@ void gpu_GA_pre_crossover(curandState *d_state, double* population, double* fitn
     // Thread ID
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (numGenerations == numGen)
+    if (numGenerations == numGen) {
         evaluation(fitness, population, p, tid);
-    __syncthreads();
+        __syncthreads();
+    }
     
     // Tournament Selection
     selection(d_state, parents, population, fitness, p, tid, individualsPerIsland);
     __syncthreads();
-    
 }   
 
 __global__
@@ -90,7 +90,8 @@ void parallelGA(double* h_population,
                 size_t bytesFitness,
                 int numGenerations,
                 curandState *&d_state,
-                const int mating) {
+                const int mating,
+                time_t t) {
     
     // Allocating device memory
     double *d_population, *d_fitness, *d_parents, *h_parents;
@@ -108,10 +109,14 @@ void parallelGA(double* h_population,
     cudaMemcpy(d_population, h_population, bytesPopulation, cudaMemcpyHostToDevice);
     
     while (numGenerations > 0) {
+
+        setup_kernel<<<islands,individualsPerIsland>>>(d_state, (unsigned long) t );
+        cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());  
+
         gpu_GA_pre_crossover<<<islands, 
                  individualsPerIsland>>>
                  (d_state, d_population, d_fitness, d_parents, populationSize, p, numGenerations);
-        cudaDeviceSynchronize(); 
+        cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());  
         
         // Copy population and fitness back to host
         cudaMemcpy(h_population, d_population, bytesPopulation, cudaMemcpyDeviceToHost);
@@ -127,7 +132,7 @@ void parallelGA(double* h_population,
         gpu_GA_post_crossover<<<islands, 
                  individualsPerIsland>>>
                  (d_state, d_population, d_fitness, d_parents, populationSize, p, numGenerations);
-        cudaDeviceSynchronize(); 
+        cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());  
         numGenerations--;
     }
 
@@ -162,10 +167,10 @@ int main() {
     float bounds[2] = {-5.12, 5.12};
 
     // GA parameters
-    const int p = 5; // # of genes per individual
+    const int p = 1024; // # of genes per individual
     const int populationSize = 8192; 
     const int mating = ceil((populationSize)/2);
-    int numGenerations = 10000; 
+    int numGenerations = 1000; 
 
     // Intialization for random number generator
     time_t t;
@@ -188,10 +193,9 @@ int main() {
     // cuRand setup
     curandState *d_state;
     cudaMalloc(&d_state, islands*individualsPerIsland*sizeof( curandState ) );
-    setup_kernel<<<islands,individualsPerIsland>>>(d_state, (unsigned long) t );
 
     // GA
-    parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state, mating);
+    parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state, mating, t);
 
     printvec(fitness, populationSize);
 
