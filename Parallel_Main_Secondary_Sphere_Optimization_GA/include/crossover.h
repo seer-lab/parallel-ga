@@ -12,4 +12,6 @@ double calc_B(float u, int nc);
 
 void simulated_binary_crossover(double *temp_population, double *parents, const int p, const float crossoverProbability, const int mating, const int nc);
 
+void line_crossover(double *temp_population, double *parents, const int p, const float crossoverProbability, const int mating);
+
 #endif

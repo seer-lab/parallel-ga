@@ -76,7 +76,7 @@ int main() {
     while (numGenerations > 0) {
 
         tournamentSelection(parents, population, fitness, p, populationSize, tournamentSize);
-        simulated_binary_crossover(temp_population, parents, p, crossoverProbability, mating, nc);
+        line_crossover(temp_population, parents, p, crossoverProbability, mating);
         mutation(temp_population, bounds, p, populationSize, mutationProbability);
         replacement(population, temp_population, fitness, p, populationSize, elitism);
         evaluation(population, fitness, populationSize, p);

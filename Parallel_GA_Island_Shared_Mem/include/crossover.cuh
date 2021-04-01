@@ -14,4 +14,8 @@ __device__
 void simulated_binary_crossover(curandState *d_state, double *islandParent, double *islandPop, 
                         const int p, int tid, const int individualsPerIsland, const float crossoverProbability, const int nc);
 
+__device__
+void line_crossover(curandState *d_state, double *islandParent, double *islandPop, 
+                    const int p, int tid, const int individualsPerIsland, const float crossoverProbability);                        
+
 #endif

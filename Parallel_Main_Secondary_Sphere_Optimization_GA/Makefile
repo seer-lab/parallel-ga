@@ -14,7 +14,7 @@ OBJ_DIR = bin
 INC_DIR = include
 
 # Target executable name:
-EXE = sphere
+EXE = ga
 
 # Object files:
 OBJS = $(OBJ_DIR)/evaluation.o $(OBJ_DIR)/mutation.o $(OBJ_DIR)/population.o $(OBJ_DIR)/crossover.o $(OBJ_DIR)/replacement.o $(OBJ_DIR)/selection.o $(OBJ_DIR)/GA.o

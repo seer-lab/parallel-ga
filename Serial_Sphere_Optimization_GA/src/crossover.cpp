@@ -1,5 +1,7 @@
 #include "../include/crossover.h"
 
+#define d 0.25
+
 void one_point_crossover(double *temp_population, double *parents, const int p, const float crossoverProbability, const int mating) {
     int crossoverPoint = 0;
     for (unsigned int i = 0; i < mating; i++) {
@@ -67,4 +69,28 @@ void simulated_binary_crossover(double *temp_population, double *parents, const 
             }  
         }
     }    
+}
+
+
+/**
+ * http://jultika.oulu.fi/files/isbn9789514287862.pdf
+ * http://www.geatbx.com/docu/algindex-03.html#P587_32771
+ */
+void line_crossover(double *temp_population, double *parents, const int p, const float crossoverProbability, const int mating) {
+    for (unsigned int i = 0; i < mating; i++) {
+        if (((float)rand())/RAND_MAX < crossoverProbability) {
+            for(unsigned int j = 0; j < p; j++) {
+                float alpha = -d + ((float) rand()/RAND_MAX) * ((1+d) - -d);
+                float alpha2 = -d + ((float) rand()/RAND_MAX) * ((1+d) - -d);
+
+                temp_population[i * p + j] = (parents[i * p + j]) + alpha * (parents[(i+mating) * p + j] - parents[i * p + j]);
+                temp_population[(i+mating) * p + j] = (parents[(i+mating) * p + j]) + alpha2 * (parents[i * p + j] - parents[(i+mating) * p + j]);
+            } 
+        } else {
+            for (unsigned int j = 0; j < p; j++) {
+                temp_population[i * p + j] = parents[i * p + j];
+                temp_population[(i+mating) * p + j] = parents[(i+mating) * p + j];
+            }  
+        }
+    } 
 }
