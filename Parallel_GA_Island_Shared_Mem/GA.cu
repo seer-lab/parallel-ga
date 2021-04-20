@@ -13,26 +13,13 @@
 #include "include/selection.cuh"
 #include "include/evaluation.cuh"
 #include "include/population.h"
+#include "../constants.h"
 
 using std::cout;
 using std::endl;
 
-// Island Parameters
-#define islands 256
-#define individualsPerIsland 8192/islands
-
-#define POP_SHMEN_SIZE (10 * individualsPerIsland * 8)
+#define POP_SHMEN_SIZE (p1 * individualsPerIsland * 8)
 #define FIT_SHMEN_SIZE (individualsPerIsland * 8)
-
-#define elitism 2
-#define tournamentSize 6
-#define crossoverProbability 0.9f
-#define mutationProbability 0.01f
-#define alpha 0.25f
-#define nc 5
-#define numGen 1000
-#define lowerBound -600
-#define upperBound 600
 
 // Initializing CUDA rand
 __global__
@@ -64,7 +51,7 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, const int
     // On first generation evaluate current population
     // Else copy over previous fitness scores to respective islands
     if (numGenerations == numGen)
-        griewank(islandFitness, islandPop, p);
+        sphere(islandFitness, islandPop, p);
     else
         islandFitness[threadIdx.x] = fitness[tid];
     __syncthreads();
@@ -74,7 +61,7 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, const int
     __syncthreads();
 
     // Arithmetic Crossover (There's an error here) 
-    arithmetic_crossover(d_state, islandParent, islandPop, p, tid, individualsPerIsland, crossoverProbability, alpha);
+    line_crossover(d_state, islandParent, islandPop, p, tid, individualsPerIsland, crossoverProbability);
     __syncthreads();
     
     // TODO: Guassian Mutation (Look into implementing guassian mutation)
@@ -89,7 +76,7 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, const int
     __syncthreads();
 
     // Evaluation for each individual
-    griewank(islandFitness, islandPop, p);
+    sphere(islandFitness, islandPop, p);
     __syncthreads();
     
     // Copy back to global memory
@@ -161,12 +148,12 @@ void printvec(double *v, int n) {
 int main() {
 
     // Optimization parameters for Sphere function
-    float bounds[2] = {-600, 600};
+    float bounds[2] = {lowerBound, upperBound};
 
     // GA parameters
-    const int p = 10; // # of genes per individual
-    const int populationSize = 8192; 
-    int numGenerations = 1000; 
+    const int p = p1; // # of genes per individual
+    const int populationSize = populationSize1; 
+    int numGenerations = numGen; 
 
     // Intialization for random number generator
     time_t t;
@@ -193,7 +180,7 @@ int main() {
     // GA
     parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state, t);
 
-    printvec(fitness, populationSize);
+    // printvec(fitness, populationSize);
 
     double *min = std::min_element(fitness, fitness + populationSize);
 

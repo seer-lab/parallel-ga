@@ -1,6 +1,7 @@
 NVCC=nvcc
 GCC=g++
 
+CONSTANT_INCLUDE=../constant.cuh
 CUDA_INCLUDEPATH=/usr/local/cuda-11.2/include
 NVCC_OPTS=-O0 -arch=sm_60 -Xcompiler -Wall -Xcompiler -Wextra -m64 -rdc=true -lcudadevrt -G -g
 

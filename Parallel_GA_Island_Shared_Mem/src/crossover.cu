@@ -69,11 +69,11 @@ void line_crossover(curandState *d_state, double *islandParent, double *islandPo
                 float alpha = -d + curand_uniform(&d_state[tid]) * ((1+d) - -d);
                 float alpha2 = -d + curand_uniform(&d_state[tid]) * ((1+d) - -d);
                 
-                islandPop[threadIdx.x * p + i] = (islandParent[threadIdx.x * p + i])) + 
+                islandPop[threadIdx.x * p + i] = ((islandParent[threadIdx.x * p + i]) + 
                                 alpha * (islandParent[(threadIdx.x+(individualsPerIsland/2)) * p + i] - islandParent[threadIdx.x * p + i]));
 
-                islandPop[(threadIdx.x+(individualsPerIsland/2)) * p + i] = (islandParent[(threadIdx.x+(individualsPerIsland/2)) * p + i]) + 
-                                alpha2 * (islandParent[threadIdx.x * p + i] - islandParent[(threadIdx.x+(individualsPerIsland/2)) * p + i]);
+                islandPop[(threadIdx.x+(individualsPerIsland/2)) * p + i] = ((islandParent[(threadIdx.x+(individualsPerIsland/2)) * p + i]) + 
+                                alpha2 * (islandParent[threadIdx.x * p + i] - islandParent[(threadIdx.x+(individualsPerIsland/2)) * p + i]));
             }
         } else {
             for (unsigned int i = 0; i < p; i++) {

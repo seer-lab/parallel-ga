@@ -13,8 +13,11 @@
 #include "include/selection.h"
 #include "include/population.h"
 #include "include/evaluation.h"
+#include "../constants_serial.h"
+
 
 using std::cout;
+using std::endl;
 
 void print2dvec(double *v, int r, int c) {
 
@@ -37,19 +40,17 @@ void printvec(double *v, int n) {
 int main() {
 
     // Optimization parameters for Sphere function
-    float bounds[2] = {-600.0f, 600.0f};
+    float bounds[2] = {lowerBound, upperBound};
 
     // GA parameters
-    const int p = 40; // # of genes per individual
-    const int populationSize = 1024; 
+    const int p = p1; // # of genes per individual
+    const int populationSize = populationSize1; 
     const int elitism = 2; 
     const int mating = ceil((populationSize)/2);
     const int tournamentSize = 6;
-    int numGenerations = 100; 
+    int numGenerations = numGen; 
     const float crossoverProbability = 0.9f;
     const float mutationProbability = 0.01f;
-    const float alpha = 0.25f;
-    const int nc = 2;
 
     // Intialization for random number generator
     time_t t;
@@ -76,7 +77,13 @@ int main() {
     while (numGenerations > 0) {
 
         tournamentSelection(parents, population, fitness, p, populationSize, tournamentSize);
-        line_crossover(temp_population, parents, p, crossoverProbability, mating);
+        if (crossover_type == 1) {
+            arithmetic_crossover(temp_population, parents, p, crossoverProbability, mating, alpha);
+        } else if (crossover_type == 2) {
+            simulated_binary_crossover(temp_population, parents, p, crossoverProbability, mating, nc);
+        } else {
+            line_crossover(temp_population, parents, p, crossoverProbability, mating);
+        }
         mutation(temp_population, bounds, p, populationSize, mutationProbability);
         replacement(population, temp_population, fitness, p, populationSize, elitism);
         evaluation(population, fitness, populationSize, p);
@@ -85,11 +92,11 @@ int main() {
     }
     
     // For testing purposes
-    printvec(fitness, populationSize);
+    // printvec(fitness, populationSize);
 
     double *min = std::min_element(fitness, fitness + populationSize);
 
     // Find the minimum element
-    cout << "\nMin Element = " << *min << std::endl;
+    cout << "\nMin Element = " << *min << "\t" << crossover_type << endl;
     return 0;
 }

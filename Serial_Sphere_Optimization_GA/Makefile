@@ -8,6 +8,7 @@ OBJ_DIR = bin
 
 # Include header file diretory:
 INC_DIR = include
+CONSTANT_INCLUDE=../constants_serial.h
 
 # Target executable name:
 EXE = ga
@@ -23,7 +24,7 @@ $(OBJ_DIR)/%.o: %.cpp
 	$(GCC) -c $< -o $@ 
 
 # Compile C++ Source files to object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp include/%.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp include/%.h $(CONSTANT_INCLUDE)
 	$(GCC) -c $< -o $@
 
 clean:

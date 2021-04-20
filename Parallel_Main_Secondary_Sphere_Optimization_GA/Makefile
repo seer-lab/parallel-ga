@@ -1,6 +1,7 @@
 NVCC=nvcc
 GCC=g++
 
+CONSTANT_INCLUDE=../constants_serial.h
 CUDA_INCLUDEPATH=/usr/local/cuda-11.2/include
 NVCC_OPTS=-O3 -arch=sm_60 -Xcompiler -Wall -Xcompiler -Wextra -m64 -rdc=true -lcudadevrt
 
@@ -27,7 +28,7 @@ $(OBJ_DIR)/%.o: %.cu
 	$(NVCC) -c $< -o $@ $(NVCC_OPTS)
 
 # Compile C++ Source files to object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp include/%.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp include/%.h $(CONSTANT_INCLUDE)
 	$(GCC) -c $< -o $@
 
 # Compile CUDA source files ot object files

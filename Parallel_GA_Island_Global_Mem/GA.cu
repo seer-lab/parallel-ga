@@ -13,24 +13,10 @@
 #include "include/selection.cuh"
 #include "include/evaluation.cuh"
 #include "include/population.h"
+#include "../constants.h"
 
 using std::cout;
 using std::endl;
-
-// Island Parameters
-#define islands 64
-#define individualsPerIsland 8192/islands
-
-#define elitism 2
-#define tournamentSize 6
-#define crossoverProbability 0.9f
-#define mutationProbability 0.01f
-#define alpha 0.25f
-#define nc 4
-#define numGen 100
-#define lowerBound -600
-#define upperBound 600
-
 
 // Initializing CUDA rand
 __global__
@@ -49,8 +35,16 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, double* p
     bool migrationFlag = false;
     if (numGenerations % 2 == 0) migrationFlag = true;
 
-    if (numGenerations == numGen)
-        griewank(fitness, population, p, tid);
+    if (numGenerations == numGen) {
+        if (evaluation_type == 1) 
+            sphere(fitness, population, p, tid);
+        else if (evaluation_type == 2)
+            rastrigin(fitness, population, p, tid);
+        else if (evaluation_type == 3)
+            ackley(fitness, population, p, tid);
+        else
+            griewank(fitness, population, p, tid);
+    }
     __syncthreads();
 
     // Tournament Selection
@@ -58,7 +52,12 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, double* p
     __syncthreads();
 
     // Arithmetic Crossover 
-    arithmetic_crossover(d_state, parents, population, p, tid, individualsPerIsland, crossoverProbability, alpha);
+    if (crossover_type == 1) 
+        arithmetic_crossover(d_state, parents, population, p, tid, individualsPerIsland, crossoverProbability, alpha);
+    else if (crossover_type == 2)
+        simulated_binary_crossover(d_state, parents, population, p, tid, individualsPerIsland, crossoverProbability, nc);
+    else 
+        line_crossover(d_state, parents, population, p, tid, individualsPerIsland, crossoverProbability);
     __syncthreads();
 
     // TODO: Guassian Mutation (Look into implementing guassian mutation)
@@ -74,7 +73,14 @@ void gpu_GA(curandState *d_state, double* population, double* fitness, double* p
     __syncthreads();
 
     // Evaluation for each individual
-    griewank(fitness, population, p, tid);
+    if (evaluation_type == 1) 
+        sphere(fitness, population, p, tid);
+    else if (evaluation_type == 2)
+        rastrigin(fitness, population, p, tid);
+    else if (evaluation_type == 3)
+        ackley(fitness, population, p, tid);
+    else
+        griewank(fitness, population, p, tid);
     __syncthreads();
     
 }   
@@ -144,9 +150,9 @@ int main() {
     float bounds[2] = {lowerBound, upperBound};
 
     // GA parameters
-    const int p = 128; // # of genes per individual
-    const int populationSize = 8192; 
-    int numGenerations = 100; 
+    const int p = p1; // # of genes per individual
+    const int populationSize = populationSize1; 
+    int numGenerations = numGen; 
 
     // Intialization for random number generator
     time_t t;
@@ -173,12 +179,12 @@ int main() {
     // GA
     parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state, t);
 
-    printvec(fitness, populationSize);
+    // printvec(fitness, populationSize);
 
     double *min = std::min_element(fitness, fitness + populationSize);
 
     // Find the minimum element
-    cout << "\nMin Element = " << *min << std::endl;
+    cout << "\nMin Element = " << *min << "\t" << crossover_type << endl;
 
     return 0;
 }

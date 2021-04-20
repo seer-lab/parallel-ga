@@ -1,4 +1,5 @@
 #include "../include/evaluation.h"
+#include "../../constants_serial.h"
 
 double square(double x) { return x * x; }
 
@@ -54,8 +55,14 @@ double griewank(double* individual, int index, const int p) {
 }
 
 void evaluation(double* population, double* fitness, const int populationSize, const int p) {
-
-    for (unsigned int i = 0; i != populationSize; i++) 
-        fitness[i] = griewank(population, i, p);
-
+    for (unsigned int i = 0; i != populationSize; i++) {
+        if (evaluation_type == 1) 
+            fitness[i] = sphere(population, i, p);
+        else if (evaluation_type == 2)
+            fitness[i] = rastrigin(population, i, p);
+        else if (evaluation_type == 3)
+            fitness[i] = ackley(population, i, p);
+        else
+            fitness[i] = griewank(population, i, p);
+    }
 }

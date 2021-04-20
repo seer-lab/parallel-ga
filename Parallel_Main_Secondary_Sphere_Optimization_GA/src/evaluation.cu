@@ -82,8 +82,7 @@ void griewank_eval(double *p, double *f, int numRows, int numCols) {
 
 }
 
-
-void evaluation(const int warp, double* h_population, double* h_fitness, double *d_population, double *d_fitness, 
+void evaluation(const int warp1, double* h_population, double* h_fitness, double *d_population, double *d_fitness, 
                 const int populationSize, const int p, size_t bytesPopulation, size_t bytesFitness) {
 
     // Copying memory onto device
@@ -92,7 +91,14 @@ void evaluation(const int warp, double* h_population, double* h_fitness, double 
     // Threads per block
     const int TPB_SIZE = populationSize/warp;
 
-    ackley_eval<<<warp, TPB_SIZE>>>(d_population, d_fitness, populationSize, p);
+    if (evaluation_type == 1) 
+        sphere_eval<<<warp, TPB_SIZE>>>(d_population, d_fitness, populationSize, p);
+    else if (evaluation_type == 2)
+        rastrigin_eval<<<warp, TPB_SIZE>>>(d_population, d_fitness, populationSize, p);
+    else if (evaluation_type == 3)
+        ackley_eval<<<warp, TPB_SIZE>>>(d_population, d_fitness, populationSize, p);
+    else
+        griewank_eval<<<warp, TPB_SIZE>>>(d_population, d_fitness, populationSize, p);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
     // Copy back to host

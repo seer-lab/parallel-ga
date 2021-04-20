@@ -13,24 +13,10 @@
 #include "include/selection.cuh"
 #include "include/evaluation.cuh"
 #include "include/population.h"
+#include "../constants.h"
 
 using std::cout;
 using std::endl;
-
-// Island Parameters
-#define islands 64
-#define individualsPerIsland 8192/islands
-
-#define elitism 2
-#define tournamentSize 6
-#define crossoverProbability 0.9f
-#define mutationProbability 0.01f
-#define alpha 0.25f
-#define numGen 100
-
-#define lowerBound -5.12
-#define upperBound 5.12
-
 
 __global__
 void setup_kernel (curandState* state, unsigned long seed) {
@@ -45,7 +31,14 @@ void gpu_GA_pre_crossover(curandState *d_state, double* population, double* fitn
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (numGenerations == numGen) {
-        rastrigin(fitness, population, p, tid);
+        if (evaluation_type == 1) 
+            sphere(fitness, population, p, tid);
+        else if (evaluation_type == 2)
+            rastrigin(fitness, population, p, tid);
+        else if (evaluation_type == 3)
+            ackley(fitness, population, p, tid);
+        else
+            griewank(fitness, population, p, tid);
         __syncthreads();
     }
     
@@ -77,9 +70,15 @@ void gpu_GA_post_crossover(curandState *d_state, double* population, double* fit
         __syncthreads();
 
         // Evaluation for each individual
-        rastrigin(fitness, population, p, tid);
+        if (evaluation_type == 1) 
+            sphere(fitness, population, p, tid);
+        else if (evaluation_type == 2)
+            rastrigin(fitness, population, p, tid);
+        else if (evaluation_type == 3)
+            ackley(fitness, population, p, tid);
+        else
+            griewank(fitness, population, p, tid);
         __syncthreads();
-
 }
 
 void parallelGA(double* h_population, 
@@ -123,7 +122,13 @@ void parallelGA(double* h_population,
         cudaMemcpy(h_parents, d_parents, bytesPopulation, cudaMemcpyDeviceToHost);
 
         // CPU Crossover
-        arithmetic_crossover(h_population, h_parents, p, crossoverProbability, mating, alpha);
+        if (crossover_type == 1) {
+            arithmetic_crossover(h_population, h_parents, p, crossoverProbability, mating, alpha);
+        } else if (crossover_type == 2) {
+            simulated_binary_crossover(h_population, h_parents, p, crossoverProbability, mating, nc);
+        } else {
+            line_crossover(h_population, h_parents, p, crossoverProbability, mating);
+        }
 
         // Copying population to device (intend to remove in the future)
         cudaMemcpy(d_population, h_population, bytesPopulation, cudaMemcpyHostToDevice);
@@ -167,10 +172,10 @@ int main() {
     float bounds[2] = {lowerBound, upperBound};
 
     // GA parameters
-    const int p = 50; // # of genes per individual
-    const int populationSize = 8192; 
-    const int mating = ceil((populationSize)/2);
-    int numGenerations = 100; 
+    const int p = p1; // # of genes per individual
+    const int populationSize = populationSize1; 
+    const int mating = mating1;
+    int numGenerations = numGen; 
 
     // Intialization for random number generator
     time_t t;
@@ -197,12 +202,12 @@ int main() {
     // GA
     parallelGA(population, fitness, populationSize, p, bytesPopulation, bytesFitness, numGenerations, d_state, mating, t);
 
-    printvec(fitness, populationSize);
+    // printvec(fitness, populationSize);
 
     double *min = std::min_element(fitness, fitness + populationSize);
 
     // Find the minimum element
-    cout << "\nMin Element = " << *min << endl;
+    cout << "\nMin Element = " << *min << "\t" << crossover_type << endl;
 
     return 0;
 }

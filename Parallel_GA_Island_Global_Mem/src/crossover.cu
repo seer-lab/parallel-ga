@@ -71,11 +71,11 @@ void line_crossover(curandState *d_state, double *parents, double *population,
                 float alpha = -d + curand_uniform(&d_state[tid]) * ((1+d) - -d);
                 float alpha2 = -d + curand_uniform(&d_state[tid]) * ((1+d) - -d);
 
-                population[tid * p + i] = (parents[tid * p + i]) + alpha * 
-                                        (parents[(tid+individualsPerIsland/2) * p + i] - parents[tid * p + i]);
+                population[tid * p + i] = ((parents[tid * p + i]) + alpha * 
+                                        (parents[(tid+individualsPerIsland/2) * p + i] - parents[tid * p + i]));
 
-                population[(tid+individualsPerIsland/2) * p + i] = (parents[(tid+individualsPerIsland/2) * p + i]) + alpha2 * 
-                                        (parents[tid * p + i] - parents[(tid+individualsPerIsland/2) * p + i]);
+                population[(tid+individualsPerIsland/2) * p + i] = ((parents[(tid+individualsPerIsland/2) * p + i]) + alpha2 * 
+                                        (parents[tid * p + i] - parents[(tid+individualsPerIsland/2) * p + i]));
             }
         } else {
             for (unsigned int i = 0; i < p; i++) {

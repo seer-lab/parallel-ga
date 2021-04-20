@@ -2,6 +2,7 @@
 #define __evaluation_cuh__
 
 #include "utils.h"
+#include "../../constants_serial.h"
 
 __device__
 double square(double x);
@@ -18,7 +19,7 @@ void ackley_eval(double *p, double *f, int numRows, int numCols);
 __global__
 void griewank_eval(double *p, double *f, int numRows, int numCols);
 
-void evaluation(const int warp, double* h_population, double* h_fitness, double *d_population, double *d_fitness, 
+void evaluation(const int warp1, double* h_population, double* h_fitness, double *d_population, double *d_fitness, 
                 const int populationSize, const int p, size_t bytesPopulation, size_t bytesFitness);
 
 #endif
